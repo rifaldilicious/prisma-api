@@ -45,7 +45,7 @@ func login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	w.Write([]byte("foo"))
+	w.Write([]byte(""))
 
 	body := readBody(r)
 	var formattedBody Login

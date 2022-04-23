@@ -28,7 +28,8 @@ func HashAndSalt(pass []byte) string {
 }
 
 func ConnectDB() *gorm.DB {
-	dsn := "host=localhost user=dikdik password=kurnia dbname=restapi port=5432 sslmode=disable TimeZone=Asia/Shanghai"
+	dsn := "host=labourpool-db-dev.mareca.vc user=postgres password=labpool dbname=labourpool port=5432 sslmode=disable TimeZone=Asia/Shanghai"
+	//dsn := "host=localhost user=dikdik password=kurnia dbname=restapi port=5432 sslmode=disable TimeZone=Asia/Shanghai"
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	HandleErr(err)
 	return db
