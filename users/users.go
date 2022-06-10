@@ -83,6 +83,13 @@ func Register(username string, email string, pass string) map[string]interface{}
 		})
 	if valid {
 		db := helpers.ConnectDB()
+		checkuser := &interfaces.User{}
+
+		err := db.Where("username", username).Or("email", email).First(&checkuser).Error
+		if !errors.Is(err, gorm.ErrRecordNotFound) {
+			return map[string]interface{}{"message": "User not found"}
+		}
+
 		generatedPassword := helpers.HashAndSalt([]byte(pass))
 		user := &interfaces.User{Username: username, Email: email, Password: generatedPassword}
 		db.Create(&user)
