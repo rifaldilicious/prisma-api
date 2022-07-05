@@ -38,3 +38,49 @@ type Validation struct {
 type ErrResponse struct {
 	Message string
 }
+
+type Post struct {
+	gorm.Model
+	ID  		uint
+	User_ID  	uint
+	Name    	string
+	Skill 		string
+	Location 	string
+	Position 	string
+	Work 		string
+	Salary 		uint
+	Message 	string
+}
+
+type ResponseCreatePost struct {
+	ID  		uint
+}
+
+type ResponseReadPost struct {
+	ID  		uint
+	User_ID  	uint
+	Name    	string
+	Skill 		string
+	Location 	string
+	Position 	string
+	Work 		string
+	Salary 		uint
+	Message 	string
+}
+
+type ResponseDeletePost struct {
+	ID  		uint
+}
+
+type ResponseUpdatePost struct {
+	gorm.Model
+	ID  		uint
+	User_ID  	uint
+	Name    	string
+	Skill 		string
+	Location 	string
+	Position 	string
+	Work 		string
+	Salary 		uint
+	Message 	string
+}
