@@ -109,11 +109,13 @@ func getUser(w http.ResponseWriter, r *http.Request) {
 }
 
 func createPost(w http.ResponseWriter, r *http.Request) {
+	auth := r.Header.Get("Authorization")
+
 	body := readBody(r)
 	var formattedBody Post
 	err := json.Unmarshal(body, &formattedBody)
 	helpers.HandleErr(err)
-	createPost := posts.CreatePost(formattedBody.User_ID, formattedBody.Name, formattedBody.Skill, formattedBody.Location, formattedBody.Position, formattedBody.Work, formattedBody.Salary, formattedBody.Message)
+	createPost := posts.CreatePost(formattedBody.Name, formattedBody.Skill, formattedBody.Location, formattedBody.Position, formattedBody.Work, formattedBody.Salary, formattedBody.Message, auth)
 	apiResponse(createPost, w)
 }
 
@@ -121,7 +123,8 @@ func readPost(w http.ResponseWriter, r *http.Request) {
 
 	vars 	:= mux.Vars(r)
 	postId 	:= vars["id"]
-	post 	:= posts.ReadPost(postId)
+	auth := r.Header.Get("Authorization")
+	post 	:= posts.ReadPost(postId, auth)
 	apiResponse(post, w)
 
 }
@@ -129,12 +132,14 @@ func readPost(w http.ResponseWriter, r *http.Request) {
 func deletePost(w http.ResponseWriter, r *http.Request) {
 	vars 	:= mux.Vars(r)
 	postId 	:= vars["id"]
-	post 	:= posts.DeletePost(postId)
+	auth := r.Header.Get("Authorization")
+	post 	:= posts.DeletePost(postId, auth)
 	apiResponse(post, w)
 
 }
 
 func updatePost(w http.ResponseWriter, r *http.Request) {
+	auth := r.Header.Get("Authorization")
 
 	var formattedBody Post
 
@@ -145,7 +150,7 @@ func updatePost(w http.ResponseWriter, r *http.Request) {
 
 	helpers.HandleErr(err)
 
-	updatePost := posts.UpdatePost(postId, formattedBody.User_ID, formattedBody.Name, formattedBody.Skill, formattedBody.Location, formattedBody.Position, formattedBody.Work, formattedBody.Salary, formattedBody.Message)
+	updatePost := posts.UpdatePost(postId, formattedBody.User_ID, formattedBody.Name, formattedBody.Skill, formattedBody.Location, formattedBody.Position, formattedBody.Work, formattedBody.Salary, formattedBody.Message, auth)
 	apiResponse(updatePost, w)
 }
 

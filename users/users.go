@@ -116,7 +116,6 @@ func Register(username string, email string, pass string, user_type string) map[
 
 func GetUser(id string, jwt string) map[string]interface{} {
 	isValid := helpers.ValidateToken(id, jwt)
-
 	if isValid {
 		db := helpers.ConnectDB()
 
