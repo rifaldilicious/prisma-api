@@ -19,9 +19,10 @@ type Login struct {
 }
 
 type Register struct {
-	Username string
-	Email    string
-	Password string
+	Username 	string
+	Email    	string
+	Password 	string
+	User_type 	string
 }
 
 type Post struct {
@@ -89,7 +90,11 @@ func register(w http.ResponseWriter, r *http.Request) {
 	var formattedBody Register
 	err := json.Unmarshal(body, &formattedBody)
 	helpers.HandleErr(err)
-	register := users.Register(formattedBody.Username, formattedBody.Email, formattedBody.Password)
+
+	fmt.Println(string(body))
+	fmt.Println(formattedBody.User_type)
+
+	register := users.Register(formattedBody.Username, formattedBody.Email, formattedBody.Password, formattedBody.User_type)
 	// Prepare response
 	apiResponse(register, w)
 }
@@ -147,6 +152,8 @@ func updatePost(w http.ResponseWriter, r *http.Request) {
 func StartApi() {
 	router := mux.NewRouter()
 	router.Use(helpers.PanicHandler)
+
+	//USER
 	router.HandleFunc("/login", login).Methods("POST")
 	router.HandleFunc("/register", register).Methods("POST")
 	router.HandleFunc("/user/{id}", getUser).Methods("GET")
