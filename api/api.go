@@ -19,9 +19,10 @@ type Login struct {
 }
 
 type Register struct {
-	Username string
-	Email    string
-	Password string
+	Username 	string
+	Email    	string
+	Password 	string
+	User_type 	string
 }
 
 type Post struct {
@@ -89,7 +90,11 @@ func register(w http.ResponseWriter, r *http.Request) {
 	var formattedBody Register
 	err := json.Unmarshal(body, &formattedBody)
 	helpers.HandleErr(err)
-	register := users.Register(formattedBody.Username, formattedBody.Email, formattedBody.Password)
+
+	fmt.Println(string(body))
+	fmt.Println(formattedBody.User_type)
+
+	register := users.Register(formattedBody.Username, formattedBody.Email, formattedBody.Password, formattedBody.User_type)
 	// Prepare response
 	apiResponse(register, w)
 }
@@ -104,11 +109,13 @@ func getUser(w http.ResponseWriter, r *http.Request) {
 }
 
 func createPost(w http.ResponseWriter, r *http.Request) {
+	auth := r.Header.Get("Authorization")
+
 	body := readBody(r)
 	var formattedBody Post
 	err := json.Unmarshal(body, &formattedBody)
 	helpers.HandleErr(err)
-	createPost := posts.CreatePost(formattedBody.User_ID, formattedBody.Name, formattedBody.Skill, formattedBody.Location, formattedBody.Position, formattedBody.Work, formattedBody.Salary, formattedBody.Message)
+	createPost := posts.CreatePost(formattedBody.Name, formattedBody.Skill, formattedBody.Location, formattedBody.Position, formattedBody.Work, formattedBody.Salary, formattedBody.Message, auth)
 	apiResponse(createPost, w)
 }
 
@@ -116,7 +123,8 @@ func readPost(w http.ResponseWriter, r *http.Request) {
 
 	vars 	:= mux.Vars(r)
 	postId 	:= vars["id"]
-	post 	:= posts.ReadPost(postId)
+	auth := r.Header.Get("Authorization")
+	post 	:= posts.ReadPost(postId, auth)
 	apiResponse(post, w)
 
 }
@@ -124,12 +132,14 @@ func readPost(w http.ResponseWriter, r *http.Request) {
 func deletePost(w http.ResponseWriter, r *http.Request) {
 	vars 	:= mux.Vars(r)
 	postId 	:= vars["id"]
-	post 	:= posts.DeletePost(postId)
+	auth := r.Header.Get("Authorization")
+	post 	:= posts.DeletePost(postId, auth)
 	apiResponse(post, w)
 
 }
 
 func updatePost(w http.ResponseWriter, r *http.Request) {
+	auth := r.Header.Get("Authorization")
 
 	var formattedBody Post
 
@@ -140,13 +150,15 @@ func updatePost(w http.ResponseWriter, r *http.Request) {
 
 	helpers.HandleErr(err)
 
-	updatePost := posts.UpdatePost(postId, formattedBody.User_ID, formattedBody.Name, formattedBody.Skill, formattedBody.Location, formattedBody.Position, formattedBody.Work, formattedBody.Salary, formattedBody.Message)
+	updatePost := posts.UpdatePost(postId, formattedBody.User_ID, formattedBody.Name, formattedBody.Skill, formattedBody.Location, formattedBody.Position, formattedBody.Work, formattedBody.Salary, formattedBody.Message, auth)
 	apiResponse(updatePost, w)
 }
 
 func StartApi() {
 	router := mux.NewRouter()
 	router.Use(helpers.PanicHandler)
+
+	//USER
 	router.HandleFunc("/login", login).Methods("POST")
 	router.HandleFunc("/register", register).Methods("POST")
 	router.HandleFunc("/user/{id}", getUser).Methods("GET")

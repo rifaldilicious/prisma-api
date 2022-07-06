@@ -8,6 +8,7 @@ import (
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
 	"time"
+	"fmt"
 )
 
 func Login(username string, pass string) map[string]interface{} {
@@ -60,6 +61,7 @@ func prepareResponse(user *interfaces.User, accounts []interfaces.ResponseAccoun
 		ID:       user.ID,
 		Username: user.Username,
 		Email:    user.Email,
+		UserType: user.UserType,
 		Accounts: accounts,
 	}
 
@@ -73,7 +75,8 @@ func prepareResponse(user *interfaces.User, accounts []interfaces.ResponseAccoun
 	return response
 }
 
-func Register(username string, email string, pass string) map[string]interface{} {
+func Register(username string, email string, pass string, user_type string) map[string]interface{} {
+
 	// Add validation to registration
 	valid := helpers.Validation(
 		[]interfaces.Validation{
@@ -85,6 +88,8 @@ func Register(username string, email string, pass string) map[string]interface{}
 		db := helpers.ConnectDB()
 		checkuser := &interfaces.User{}
 
+		fmt.Println(user_type)
+
 		//prevent duplicate username, email
 		err := db.Where("username", username).Or("email", email).First(&checkuser).Error
 		if !errors.Is(err, gorm.ErrRecordNotFound) {
@@ -92,7 +97,7 @@ func Register(username string, email string, pass string) map[string]interface{}
 		}
 
 		generatedPassword := helpers.HashAndSalt([]byte(pass))
-		user := &interfaces.User{Username: username, Email: email, Password: generatedPassword}
+		user := &interfaces.User{Username: username, Email: email, Password: generatedPassword, UserType: user_type}
 		db.Create(&user)
 
 		account := &interfaces.Account{Type: "Daily Account", Name: string(username + "'s" + " account"), Balance: 0, UserID: user.ID}
@@ -111,7 +116,6 @@ func Register(username string, email string, pass string) map[string]interface{}
 
 func GetUser(id string, jwt string) map[string]interface{} {
 	isValid := helpers.ValidateToken(id, jwt)
-
 	if isValid {
 		db := helpers.ConnectDB()
 

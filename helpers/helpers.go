@@ -12,6 +12,7 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
+	"fmt"
 )
 
 func HandleErr(err error) {
@@ -85,4 +86,38 @@ func ValidateToken(id string, jwtToken string) bool {
 	} else {
 		return false
 	}
+}
+
+func UserID(jwtToken string) uint {
+	cleanJWT := strings.Replace(jwtToken, "Bearer ", "", -1)
+	tokenData := jwt.MapClaims{}
+	token, err := jwt.ParseWithClaims(cleanJWT, tokenData, func(token *jwt.Token) (interface{}, error) {
+		return []byte("TokenPassword"), nil
+	})
+	HandleErr(err)
+	userID := tokenData["user_id"]
+	id := uint(userID.(float64))
+	if token.Valid {
+		return id
+	} else {
+		return 0
+	}
+
+}
+
+func UserIDStr(jwtToken string) string {
+	cleanJWT := strings.Replace(jwtToken, "Bearer ", "", -1)
+	tokenData := jwt.MapClaims{}
+	token, err := jwt.ParseWithClaims(cleanJWT, tokenData, func(token *jwt.Token) (interface{}, error) {
+		return []byte("TokenPassword"), nil
+	})
+	HandleErr(err)
+	userID := tokenData["user_id"]
+	id := fmt.Sprintf("%v",userID)
+	if token.Valid {
+		return id
+	} else {
+		return "0"
+	}
+
 }

@@ -7,6 +7,8 @@ import (
 	"errors"
 	"math/rand"
 	"time"
+	// "strconv"
+	// "fmt"
 )
 
 func prepareCreatePostResponse(post *interfaces.Post) map[string]interface{} {
@@ -68,57 +70,79 @@ func prepareUpdatePostResponse(post *interfaces.Post) map[string]interface{} {
 	return response
 }
 
-func CreatePost(user_id uint, name string, skill string, location string, position string, work string, salary uint, message string) map[string]interface{} {
+func CreatePost(name string, skill string, location string, position string, work string, salary uint, message string, jwt string) map[string]interface{} {
 
 	//generate random number for post ID
 	rand.Seed(time.Now().UnixNano())
 	id := uint(rand.Intn(99999999 - 10000000) + 10000000)
 
-	db 		:= helpers.ConnectDB()	
-	post 	:= &interfaces.Post{ID: id, User_ID: user_id, Name: name, Skill: skill, Location: location, Position: position, Work: work, Salary: salary, Message: message}
-	db.Create(&post)
-
-	return prepareCreatePostResponse(post)
+	userID 	:= helpers.UserIDStr(jwt)
+	isValid := helpers.ValidateToken(userID, jwt)
+	if isValid {
+		userID := helpers.UserID(jwt)
+		db 		:= helpers.ConnectDB()	
+		post 	:= &interfaces.Post{ID: id, User_ID: userID, Name: name, Skill: skill, Location: location, Position: position, Work: work, Salary: salary, Message: message}
+		db.Create(&post)
+		return prepareCreatePostResponse(post)
+	} else {
+		return map[string]interface{}{"Message": "Not valid token"}
+	}
 }
 
-func ReadPost(id string) map[string]interface{} {
+func ReadPost(postId string, jwt string) map[string]interface{} {
 
-	db 		:= helpers.ConnectDB()
-	post 	:= &interfaces.Post{}
-	
-	err 	:= db.First(&post, id).Error
-	if errors.Is(err, gorm.ErrRecordNotFound) {
-		return map[string]interface{}{"message": "record not found"}
+	userID 	:= helpers.UserIDStr(jwt)
+	isValid := helpers.ValidateToken(userID, jwt)
+	if isValid {
+		db 		:= helpers.ConnectDB()
+		post 	:= &interfaces.Post{}		
+		err 	:= db.First(&post, postId).Error
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return map[string]interface{}{"message": "record not found"}
+		}
+		return prepareReadPostResponse(post)
+	} else {
+		return map[string]interface{}{"Message": "Not valid token"}
 	}
-
-	return prepareReadPostResponse(post)
 }
 
-func UpdatePost(id string, user_id uint, name string, skill string, location string, position string, work string, salary uint, message string) map[string]interface{} {
+func UpdatePost(postId string, user_id uint, name string, skill string, location string, position string, work string, salary uint, message string, jwt string) map[string]interface{} {
 
-	db 		:= helpers.ConnectDB()	
-	post 	:= &interfaces.Post{}
-	
-	err := db.First(&post, id).Error
-	if errors.Is(err, gorm.ErrRecordNotFound) {
-		return map[string]interface{} {"message": "record not found"}
+	userID 	:= helpers.UserIDStr(jwt)
+	isValid := helpers.ValidateToken(userID, jwt)
+	if isValid {
+		db 		:= helpers.ConnectDB()	
+		post 	:= &interfaces.Post{}
+		
+		err := db.First(&post, postId).Error
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return map[string]interface{} {"message": "record not found"}
+		}
+
+		post 	= &interfaces.Post{User_ID: user_id, Name: name, Skill: skill, Location: location, Position: position, Work: work, Salary: salary, Message: message}
+		db.Where("id = ?", postId).Updates(&post)
+		return prepareUpdatePostResponse(post)
+	} else {
+		return map[string]interface{}{"Message": "Not valid token"}
 	}
-
-	post 	= &interfaces.Post{User_ID: user_id, Name: name, Skill: skill, Location: location, Position: position, Work: work, Salary: salary, Message: message}
-	db.Where("id = ?", id).Updates(&post)
-	return prepareUpdatePostResponse(post)
 }
 
-func DeletePost(id string) map[string]interface{} {
+func DeletePost(postId string, jwt string) map[string]interface{} {
 
-	db 		:= helpers.ConnectDB()
-	post 	:= &interfaces.Post{}
-	
-	err := db.First(&post, id).Error
-	if errors.Is(err, gorm.ErrRecordNotFound) {
-		return map[string]interface{} {"message": "record not found"}
+	userID 	:= helpers.UserIDStr(jwt)
+	isValid := helpers.ValidateToken(userID, jwt)
+	if isValid {
+		db 		:= helpers.ConnectDB()
+		post 	:= &interfaces.Post{}
+		
+		err := db.First(&post, postId).Error
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return map[string]interface{} {"message": "record not found"}
+		}
+
+		db.Where("id = ?", postId).Delete(&post)
+		return prepareDeletePostResponse(post)
+	} else {
+		return map[string]interface{}{"Message": "Not valid token"}
 	}
-
-	db.Where("id = ?", id).Delete(&post)
-	return prepareDeletePostResponse(post)
 }

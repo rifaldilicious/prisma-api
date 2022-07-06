@@ -7,6 +7,7 @@ type User struct {
 	Username string
 	Email    string
 	Password string
+	UserType string
 }
 
 type Account struct {
@@ -27,6 +28,7 @@ type ResponseUser struct {
 	ID       uint
 	Username string
 	Email    string
+	UserType string
 	Accounts []ResponseAccount
 }
 
