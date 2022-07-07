@@ -8,7 +8,6 @@ import (
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
 	"time"
-	"fmt"
 )
 
 func Login(username string, pass string) map[string]interface{} {
@@ -83,12 +82,11 @@ func Register(username string, email string, pass string, user_type string) map[
 			{Value: username, Valid: "username"},
 			{Value: email, Valid: "email"},
 			{Value: pass, Valid: "password"},
+			{Value: user_type, Valid: "user_type"},
 		})
 	if valid {
 		db := helpers.ConnectDB()
 		checkuser := &interfaces.User{}
-
-		fmt.Println(user_type)
 
 		//prevent duplicate username, email
 		err := db.Where("username", username).Or("email", email).First(&checkuser).Error

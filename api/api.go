@@ -129,6 +129,21 @@ func readPost(w http.ResponseWriter, r *http.Request) {
 
 }
 
+func readAllPost(w http.ResponseWriter, r *http.Request) {
+
+	auth := r.Header.Get("Authorization")
+	post 	:= posts.ReadAllPost(auth)
+	apiResponse(post, w)
+
+	// var post []interfaces.Post
+	// db 		:= helpers.ConnectDB()
+	// db.Find(&post)
+	// w.Header().Set("Content-Type", "application/json")
+	// w.WriteHeader(http.StatusOK)
+	// json.NewEncoder(w).Encode(post)
+
+}
+
 func deletePost(w http.ResponseWriter, r *http.Request) {
 	vars 	:= mux.Vars(r)
 	postId 	:= vars["id"]
@@ -166,6 +181,7 @@ func StartApi() {
 	//POST
 	router.HandleFunc("/post", createPost).Methods("POST")
 	router.HandleFunc("/post/{id}", readPost).Methods("GET")
+	router.HandleFunc("/post", readAllPost).Methods("GET")
 	router.HandleFunc("/post/{id}", deletePost).Methods("DELETE")
 	router.HandleFunc("/post/{id}", updatePost).Methods("PUT")
 
