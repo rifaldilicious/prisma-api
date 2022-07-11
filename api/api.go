@@ -91,9 +91,6 @@ func register(w http.ResponseWriter, r *http.Request) {
 	err := json.Unmarshal(body, &formattedBody)
 	helpers.HandleErr(err)
 
-	fmt.Println(string(body))
-	fmt.Println(formattedBody.User_type)
-
 	register := users.Register(formattedBody.Username, formattedBody.Email, formattedBody.Password, formattedBody.User_type)
 	// Prepare response
 	apiResponse(register, w)
@@ -106,6 +103,23 @@ func getUser(w http.ResponseWriter, r *http.Request) {
 
 	user := users.GetUser(userId, auth)
 	apiResponse(user, w)
+}
+
+func readAllUser(w http.ResponseWriter, r *http.Request) {
+
+	// auth := r.Header.Get("Authorization")
+	// post 	:= posts.ReadAllPost(auth)
+	// apiResponse(post, w)
+
+	//TODO: Gunakan apiresponse interfasce
+	var users []interfaces.User
+	db 		:= helpers.ConnectDB()
+	db.Find(&users)
+	
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(users)
+
 }
 
 func createPost(w http.ResponseWriter, r *http.Request) {
@@ -131,16 +145,18 @@ func readPost(w http.ResponseWriter, r *http.Request) {
 
 func readAllPost(w http.ResponseWriter, r *http.Request) {
 
-	auth := r.Header.Get("Authorization")
-	post 	:= posts.ReadAllPost(auth)
-	apiResponse(post, w)
+	// auth := r.Header.Get("Authorization")
+	// post 	:= posts.ReadAllPost(auth)
+	// apiResponse(post, w)
 
-	// var post []interfaces.Post
-	// db 		:= helpers.ConnectDB()
-	// db.Find(&post)
-	// w.Header().Set("Content-Type", "application/json")
-	// w.WriteHeader(http.StatusOK)
-	// json.NewEncoder(w).Encode(post)
+	//TODO: Gunakan apiresponse interfasce
+	var posts []interfaces.Post
+	db 		:= helpers.ConnectDB()
+	db.Find(&posts)
+	
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(posts)
 
 }
 
@@ -176,6 +192,7 @@ func StartApi() {
 	//USER
 	router.HandleFunc("/login", login).Methods("POST")
 	router.HandleFunc("/register", register).Methods("POST")
+	router.HandleFunc("/user", readAllUser).Methods("GET")
 	router.HandleFunc("/user/{id}", getUser).Methods("GET")
 
 	//POST

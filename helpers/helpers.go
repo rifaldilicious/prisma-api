@@ -132,7 +132,6 @@ func contains(slice []string, item string) bool {
     for _, s := range slice {
         set[s] = struct{}{}
     }
-
     _, ok := set[item] 
     return ok
 }
