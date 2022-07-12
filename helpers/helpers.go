@@ -54,6 +54,11 @@ func Validation(values []interfaces.Validation) bool {
 			if len(values[i].Value) < 5 {
 				return false
 			}
+		case "user_type":
+			s := []string{"peserta","perusahaan","admin"}			
+			if !contains(s, values[i].Value) {
+				return false
+			}
 		}
 	}
 	return true
@@ -120,4 +125,13 @@ func UserIDStr(jwtToken string) string {
 		return "0"
 	}
 
+}
+
+func contains(slice []string, item string) bool {
+    set := make(map[string]struct{}, len(slice))
+    for _, s := range slice {
+        set[s] = struct{}{}
+    }
+    _, ok := set[item] 
+    return ok
 }
