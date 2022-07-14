@@ -25,6 +25,16 @@ type Register struct {
 	User_type 	string
 }
 
+type User struct {
+	Username 	string
+	Password 	string
+	Email 		string
+	UserType	string
+	UserID 		string
+	Balance		uint
+	Name		string
+}
+
 type Post struct {
 	User_ID 	uint
 	Name    	string
@@ -122,6 +132,22 @@ func readAllUser(w http.ResponseWriter, r *http.Request) {
 
 }
 
+func updateUser(w http.ResponseWriter, r *http.Request) {
+	auth := r.Header.Get("Authorization")
+
+	var formattedBody User
+
+	vars 	:= mux.Vars(r)
+	userID 	:= vars["id"]
+	body 	:= readBody(r)
+	err 	:= json.Unmarshal(body, &formattedBody)
+
+	helpers.HandleErr(err)
+
+	updateUser := users.UpdateUser(userID, formattedBody.Username, formattedBody.Email, formattedBody.Password, formattedBody.UserType, formattedBody.Name, formattedBody.Balance, auth)
+	apiResponse(updateUser, w)
+}
+
 func createPost(w http.ResponseWriter, r *http.Request) {
 	auth := r.Header.Get("Authorization")
 
@@ -192,13 +218,14 @@ func StartApi() {
 	//USER
 	router.HandleFunc("/login", login).Methods("POST")
 	router.HandleFunc("/register", register).Methods("POST")
-	router.HandleFunc("/user", readAllUser).Methods("GET")
+	router.HandleFunc("/users", readAllUser).Methods("GET")
 	router.HandleFunc("/user/{id}", getUser).Methods("GET")
+	router.HandleFunc("/user/{id}", updateUser).Methods("PUT")
 
 	//POST
 	router.HandleFunc("/post", createPost).Methods("POST")
 	router.HandleFunc("/post/{id}", readPost).Methods("GET")
-	router.HandleFunc("/post", readAllPost).Methods("GET")
+	router.HandleFunc("/posts", readAllPost).Methods("GET")
 	router.HandleFunc("/post/{id}", deletePost).Methods("DELETE")
 	router.HandleFunc("/post/{id}", updatePost).Methods("PUT")
 
