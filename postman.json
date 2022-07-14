@@ -94,6 +94,51 @@
                     "response": []
                 }
             ]
+        },
+        {
+            "name": "JADWAL",
+            "item": [
+                {
+                    "name": "Create",
+                    "request": {
+                        "method": "GET",
+                        "header": []
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Update",
+                    "request": {
+                        "method": "GET",
+                        "header": []
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Read One",
+                    "request": {
+                        "method": "GET",
+                        "header": []
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Read All",
+                    "request": {
+                        "method": "GET",
+                        "header": []
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Delete",
+                    "request": {
+                        "method": "GET",
+                        "header": []
+                    },
+                    "response": []
+                }
+            ]
         }
     ]
 }

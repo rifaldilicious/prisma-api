@@ -5,6 +5,7 @@ import (
 	"crypto-project/interfaces"
 	"crypto-project/users"
 	"crypto-project/posts"
+	"crypto-project/jadwals"
 	"encoding/json"
 	"fmt"
 	"github.com/gorilla/mux"
@@ -56,6 +57,11 @@ type UpdatePost struct {
 	Work 		string
 	Salary 		uint
 	Message 	string
+}
+
+type Jadwal struct {
+	Kuota 	uint
+	Lokasi 	string
 }
 
 func readBody(r *http.Request) []byte {
@@ -211,6 +217,69 @@ func updatePost(w http.ResponseWriter, r *http.Request) {
 	apiResponse(updatePost, w)
 }
 
+func createJadwal(w http.ResponseWriter, r *http.Request) {
+	auth := r.Header.Get("Authorization")
+	body := readBody(r)
+
+	var formattedBody Jadwal
+	err := json.Unmarshal(body, &formattedBody)
+	helpers.HandleErr(err)
+	createJadwal := jadwals.CreateJadwal(formattedBody.Kuota, formattedBody.Lokasi, auth)
+	apiResponse(createJadwal, w)
+}
+
+func readJadwal(w http.ResponseWriter, r *http.Request) {
+
+	vars 		:= mux.Vars(r)
+	jadwalID 	:= vars["id"]
+	auth 		:= r.Header.Get("Authorization")
+	jadwal 		:= jadwals.ReadJadwal(jadwalID, auth)
+	apiResponse(jadwal, w)
+
+}
+
+func readAllJadwal(w http.ResponseWriter, r *http.Request) {
+
+	// auth := r.Header.Get("Authorization")
+	// post 	:= posts.ReadAllPost(auth)
+	// apiResponse(post, w)
+
+	//TODO: Gunakan apiresponse interfasce
+	var jadwals []interfaces.Jadwal
+	db 		:= helpers.ConnectDB()
+	db.Find(&jadwals)
+	
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(jadwals)
+
+}
+
+func deleteJadwal(w http.ResponseWriter, r *http.Request) {
+	vars 		:= mux.Vars(r)
+	jadwalID 	:= vars["id"]
+	auth 		:= r.Header.Get("Authorization")
+	jadwal 		:= jadwals.DeleteJadwal(jadwalID, auth)
+	apiResponse(jadwal, w)
+
+}
+
+func updateJadwal(w http.ResponseWriter, r *http.Request) {
+	auth := r.Header.Get("Authorization")
+
+	var formattedBody Jadwal
+
+	vars 		:= mux.Vars(r)
+	jadwalID	:= vars["id"]
+	body 		:= readBody(r)
+	err 		:= json.Unmarshal(body, &formattedBody)
+
+	helpers.HandleErr(err)
+
+	updateJadwal := jadwals.UpdateJadwal(jadwalID, formattedBody.Kuota, formattedBody.Lokasi, auth)
+	apiResponse(updateJadwal, w)
+}
+
 func StartApi() {
 	router := mux.NewRouter()
 	router.Use(helpers.PanicHandler)
@@ -228,6 +297,13 @@ func StartApi() {
 	router.HandleFunc("/posts", readAllPost).Methods("GET")
 	router.HandleFunc("/post/{id}", deletePost).Methods("DELETE")
 	router.HandleFunc("/post/{id}", updatePost).Methods("PUT")
+
+	//JADWAL
+	router.HandleFunc("/jadwal", createJadwal).Methods("POST")
+	router.HandleFunc("/jadwal/{id}", readJadwal).Methods("GET")
+	router.HandleFunc("/jadwals", readAllJadwal).Methods("GET")
+	router.HandleFunc("/jadwal/{id}", deleteJadwal).Methods("DELETE")
+	router.HandleFunc("/jadwal/{id}", updateJadwal).Methods("PUT")
 
 	router.Use(mux.CORSMethodMiddleware(router))
 

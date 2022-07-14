@@ -86,3 +86,27 @@ type ResponseUpdatePost struct {
 	Salary 		uint
 	Message 	string
 }
+
+type ResponseReadJadwal struct {
+	ID  		uint
+	Kuota  		uint
+	Lokasi    	string
+}
+
+type Jadwal struct {
+	gorm.Model
+	ID  		uint
+	Kuota  		uint
+	Lokasi    	string
+}
+
+type ResponseDeleteJadwal struct {
+	ID  		uint
+}
+
+type ResponseUpdateJadwal struct {
+	gorm.Model
+	ID  		uint
+	Kuota  		uint
+	Lokasi    	string
+}
