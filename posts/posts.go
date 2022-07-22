@@ -40,25 +40,6 @@ func prepareReadPostResponse(post *interfaces.Post) map[string]interface{} {
 	return response
 }
 
-func prepareReadAllPostResponse(post *interfaces.Post) map[string]interface{} {
-	responseReadPost := &interfaces.ResponseReadPost{
-		ID:   		post.ID,
-		User_ID:   	post.User_ID,
-		Name:   	post.Name,
-		Skill:   	post.Skill,
-		Location:   post.Location,
-		Position:   post.Position,
-		Work:   	post.Work,
-		Salary:   	post.Salary,
-		Message:   	post.Message,
-	}
-
-	var response = map[string]interface{}{"message": "all is fine"}
-	response["data"] = responseReadPost
-
-	return response
-}
-
 func prepareDeletePostResponse(post *interfaces.Post) map[string]interface{} {
 	responsePost := &interfaces.ResponseDeletePost{
 		ID:   		post.ID,
@@ -122,6 +103,25 @@ func ReadPost(postId string, jwt string) map[string]interface{} {
 	} else {
 		return map[string]interface{}{"Message": "Not valid token"}
 	}
+}
+
+func prepareReadAllPostResponse(post *interfaces.Post) map[string]interface{} {
+	responseReadPost := &interfaces.ResponseReadPost{
+		ID:   		post.ID,
+		User_ID:   	post.User_ID,
+		Name:   	post.Name,
+		Skill:   	post.Skill,
+		Location:   post.Location,
+		Position:   post.Position,
+		Work:   	post.Work,
+		Salary:   	post.Salary,
+		Message:   	post.Message,
+	}
+
+	var response = map[string]interface{}{"message": "all is fine"}
+	response["data"] = responseReadPost
+
+	return response
 }
 
 func ReadAllPost(jwt string) map[string]interface{} {

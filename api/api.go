@@ -123,18 +123,20 @@ func getUser(w http.ResponseWriter, r *http.Request) {
 
 func readAllUser(w http.ResponseWriter, r *http.Request) {
 
-	// auth := r.Header.Get("Authorization")
-	// post 	:= posts.ReadAllPost(auth)
-	// apiResponse(post, w)
-
 	//TODO: Gunakan apiresponse interfasce
-	var users []interfaces.User
-	db 		:= helpers.ConnectDB()
-	db.Find(&users)
-	
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(users)
+	auth 	:= r.Header.Get("Authorization")	
+	userID 	:= helpers.UserIDStr(auth)
+	isValid := helpers.ValidateToken(userID, auth)
+
+	if isValid {
+		var users []interfaces.User
+		db 		:= helpers.ConnectDB()
+		db.Find(&users)
+		
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		json.NewEncoder(w).Encode(users)
+	}
 
 }
 
@@ -177,18 +179,20 @@ func readPost(w http.ResponseWriter, r *http.Request) {
 
 func readAllPost(w http.ResponseWriter, r *http.Request) {
 
-	// auth := r.Header.Get("Authorization")
-	// post 	:= posts.ReadAllPost(auth)
-	// apiResponse(post, w)
-
 	//TODO: Gunakan apiresponse interfasce
-	var posts []interfaces.Post
-	db 		:= helpers.ConnectDB()
-	db.Find(&posts)
-	
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(posts)
+	auth 	:= r.Header.Get("Authorization")	
+	userID 	:= helpers.UserIDStr(auth)
+	isValid := helpers.ValidateToken(userID, auth)
+
+	if isValid {
+		var posts []interfaces.Post
+		db 		:= helpers.ConnectDB()
+		db.Find(&posts)
+		
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		json.NewEncoder(w).Encode(posts)
+	}
 
 }
 
@@ -240,18 +244,22 @@ func readJadwal(w http.ResponseWriter, r *http.Request) {
 
 func readAllJadwal(w http.ResponseWriter, r *http.Request) {
 
-	// auth := r.Header.Get("Authorization")
-	// post 	:= posts.ReadAllPost(auth)
-	// apiResponse(post, w)
-
 	//TODO: Gunakan apiresponse interfasce
-	var jadwals []interfaces.Jadwal
-	db 		:= helpers.ConnectDB()
-	db.Find(&jadwals)
-	
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(jadwals)
+	auth 	:= r.Header.Get("Authorization")	
+	userID 	:= helpers.UserIDStr(auth)
+	isValid := helpers.ValidateToken(userID, auth)
+
+	if isValid {
+
+		var jadwals []interfaces.Jadwal
+		db 		:= helpers.ConnectDB()
+		db.Find(&jadwals)
+		
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		json.NewEncoder(w).Encode(jadwals)
+		
+	}
 
 }
 
