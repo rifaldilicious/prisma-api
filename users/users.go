@@ -8,6 +8,7 @@ import (
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
 	"time"
+	"fmt"
 )
 
 func Login(username string, pass string) map[string]interface{} {
@@ -26,6 +27,9 @@ func Login(username string, pass string) map[string]interface{} {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return map[string]interface{}{"message": "User not found"}
 		}
+
+		fmt.Println("u1:", user.Password)
+		fmt.Println("u2:", pass)
 
 		passErr := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(pass))
 		if passErr == bcrypt.ErrMismatchedHashAndPassword && passErr != nil {

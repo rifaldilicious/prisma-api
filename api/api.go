@@ -14,6 +14,17 @@ import (
 	"net/http"
 )
 
+type JSONResponse struct {
+	Status  string      `json:"status"`
+	Message string      `json:"message"`
+	Data    interface{} `json:"data"`
+}
+
+type ErrorResponse struct {
+	Status  string `json:"status"`
+	Message string `json:"message"`
+}
+
 type Login struct {
 	Username string
 	Password string
@@ -63,6 +74,23 @@ type Jadwal struct {
 	Kuota 	uint
 	Lokasi 	string
 }
+
+func RespondWithJSON(w http.ResponseWriter, code int, payload interface{}) {
+	response, _ := json.Marshal(payload)
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(code)
+	if _, err := w.Write(response); err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		fmt.Print(w, err.Error())
+	}
+}
+
+func RespondWithError(w http.ResponseWriter, code int, message string) {
+	json := ErrorResponse{Status: "Failed", Message: message}
+	RespondWithJSON(w, code, json)
+}
+
 
 func readBody(r *http.Request) []byte {
 	body, err := ioutil.ReadAll(r.Body)
@@ -184,14 +212,27 @@ func readAllPost(w http.ResponseWriter, r *http.Request) {
 	userID 	:= helpers.UserIDStr(auth)
 	isValid := helpers.ValidateToken(userID, auth)
 
-	if isValid {
+	if isValid == true {
+
 		var posts []interfaces.Post
 		db 		:= helpers.ConnectDB()
-		db.Find(&posts)
-		
-		w.Header().Set("Content-Type", "application/json")
-		w.WriteHeader(http.StatusOK)
-		json.NewEncoder(w).Encode(posts)
+		if err := db.Find(&posts).Error; err != nil {
+			RespondWithJSON(w, 400, JSONResponse{
+				Status:  "failed",
+				Message: "Gagal mengambil Data",
+				Data:    err,
+			})
+			return
+		}
+
+		RespondWithJSON(w, 200, JSONResponse{
+			Status:  "success",
+			Message: "Berhasil mengambil data",
+			Data:    posts,
+		})
+
+	} else {
+		fmt.Println("xxx")
 	}
 
 }

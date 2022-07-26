@@ -1,0 +1,7 @@
+#RESTAPI
+
+semua bisa lihat semua
+semua bisa update semua
+diterapkan di semua endpoin
+
+read all post tidak otorisasi

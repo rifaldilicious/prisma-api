@@ -10,7 +10,7 @@ import (
 	"log"
 	"net/http"
 	"regexp"
-	"strconv"
+	// "strconv"
 	"strings"
 	"fmt"
 )
@@ -85,8 +85,9 @@ func ValidateToken(id string, jwtToken string) bool {
 		return []byte("TokenPassword"), nil
 	})
 	HandleErr(err)
-	var userId, _ = strconv.ParseFloat(id, 8)
-	if token.Valid && tokenData["user_id"] == userId {
+	// var userId, _ = strconv.ParseFloat(id, 8)
+	// if token.Valid && tokenData["user_id"] == userId {
+	if token.Valid {
 		return true
 	} else {
 		return false
@@ -134,4 +135,15 @@ func contains(slice []string, item string) bool {
     }
     _, ok := set[item] 
     return ok
+}
+
+func RespondWithJSON(w http.ResponseWriter, code int, payload interface{}) {
+	response, _ := json.Marshal(payload)
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(code)
+	if _, err := w.Write(response); err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		fmt.Print(w, err.Error())
+	}
 }
