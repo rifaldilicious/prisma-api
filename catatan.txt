@@ -5,3 +5,31 @@ semua bisa update semua
 diterapkan di semua endpoin
 
 read all post tidak otorisasi
+
+26jul2022
+update username dan email jika
+- belum digunakan atau sama dengan existing
+
+===
+
+if(user.Username != username) {
+    err2 := db.Where("username", username).First(&user).Error
+    if !errors.Is(err2, gorm.ErrRecordNotFound) {
+        return map[string]interface{}{"message": "user exist"}
+    }
+}
+
+if(user.Email != email) {
+    err3 := db.Where("email", email).First(&user).Error
+    if !errors.Is(err3, gorm.ErrRecordNotFound) {
+        return map[string]interface{}{"message": "user exist"}
+    }
+}
+
+if(user.Username != username) {
+			fmt.Println("username tidak sama")
+			err2 := db.Where("username", username).Or("email", email).First(&user).Error
+			if !errors.Is(err2, gorm.ErrRecordNotFound) {
+				return map[string]interface{}{"message": "User exist"}
+			}
+		}
