@@ -114,6 +114,9 @@ func apiResponse(call map[string]interface{}, w http.ResponseWriter) {
 	} else if call["message"] == "record not found" {
 		resp := interfaces.ErrResponse{Message: "Record not found"}
 		json.NewEncoder(w).Encode(resp)
+	} else if call["message"] == "user exist" {
+		resp := interfaces.ErrResponse{Message: "Username or email exist"}
+		json.NewEncoder(w).Encode(resp)
 	} else {
 		resp := interfaces.ErrResponse{Message: "Wrong username or password"}
 		json.NewEncoder(w).Encode(resp)
