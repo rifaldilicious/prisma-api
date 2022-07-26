@@ -8,7 +8,6 @@ import (
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
 	"time"
-	"fmt"
 )
 
 func Login(username string, pass string) map[string]interface{} {
@@ -27,9 +26,6 @@ func Login(username string, pass string) map[string]interface{} {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return map[string]interface{}{"message": "User not found"}
 		}
-
-		fmt.Println("u1:", user.Password)
-		fmt.Println("u2:", pass)
 
 		passErr := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(pass))
 		if passErr == bcrypt.ErrMismatchedHashAndPassword && passErr != nil {
@@ -162,12 +158,27 @@ func UpdateUser(userID string, username string, email string, password string, u
 	isValid := helpers.ValidateToken(userID, jwt)
 	
 	if isValid {
+
 		db 		:= helpers.ConnectDB()	
 		user 	:= &interfaces.User{}
 		
 		err := db.First(&user, userID).Error
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return map[string]interface{} {"message": "record not found"}
+		}
+
+		if(user.Username != username) {
+			err2 := db.Where("username", username).First(&user).Error
+			if errors.Is(err2, gorm.ErrRecordNotFound) {
+				return map[string]interface{}{"message": "user exist"}
+			}
+		}
+
+		if(user.Email != email) {
+			err2 := db.Where("email", email).First(&user).Error
+			if errors.Is(err2, gorm.ErrRecordNotFound) {
+				return map[string]interface{}{"message": "user exist"}
+			}
 		}
 
 		users 	:= &interfaces.User{Username: username, Password: password, Email: email, UserType: user_type}
