@@ -156,32 +156,31 @@ func UpdateUser(userID string, username string, email string, password string, u
 
 	// userID 	= helpers.UserIDStr(jwt)
 	isValid := helpers.ValidateToken(userID, jwt)
-	
-	if isValid {
 
-		db 		:= helpers.ConnectDB()	
-		user 	:= &interfaces.User{}
-		
+	if isValid {
+		db := helpers.ConnectDB()
+		user := &interfaces.User{}
+
 		err := db.First(&user, userID).Error
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return map[string]interface{} {"message": "record not found"}
+			return map[string]interface{}{"message": "record not found"}
 		}
 
-		if(user.Username != username) {
-			err2 := db.Where("username", username).First(&user).Error
-			if errors.Is(err2, gorm.ErrRecordNotFound) {
-				return map[string]interface{}{"message": "user exist"}
-			}
-		}
+		//if(user.Username != username) {
+		//	err2 := db.Where("username", username).First(&user).Error
+		//	if errors.Is(err2, gorm.ErrRecordNotFound) {
+		//		return map[string]interface{}{"message": "user exist"}
+		//	}
+		//}
+		//
+		//if(user.Email != email) {
+		//	err2 := db.Where("email", email).First(&user).Error
+		//	if errors.Is(err2, gorm.ErrRecordNotFound) {
+		//		return map[string]interface{}{"message": "user exist"}
+		//	}
+		//}
 
-		if(user.Email != email) {
-			err2 := db.Where("email", email).First(&user).Error
-			if errors.Is(err2, gorm.ErrRecordNotFound) {
-				return map[string]interface{}{"message": "user exist"}
-			}
-		}
-
-		users 	:= &interfaces.User{Username: username, Password: password, Email: email, UserType: user_type}
+		users := &interfaces.User{Username: username, Password: password, Email: email, UserType: user_type}
 		db.Where("id = ?", userID).Updates(&users)
 
 		account := &interfaces.Account{Name: name, Balance: balance}
@@ -191,7 +190,7 @@ func UpdateUser(userID string, username string, email string, password string, u
 		respAccount := interfaces.ResponseAccount{ID: account.ID, Name: account.Name, Balance: int(account.Balance)}
 		accounts = append(accounts, respAccount)
 
-		return prepareUpdateUserResponse(user,accounts, false)
+		return prepareUpdateUserResponse(user, accounts, false)
 	} else {
 		return map[string]interface{}{"Message": "Not valid token"}
 	}
