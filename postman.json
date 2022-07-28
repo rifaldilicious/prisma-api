@@ -1,0 +1,144 @@
+{
+    "info": {
+        "_postman_id": "a7ea30b7-8d7b-422c-838a-4767f31af565",
+        "name": "API PAK DIKDIK",
+        "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    },
+    "item": [
+        {
+            "name": "USER",
+            "item": [
+                {
+                    "name": "Register",
+                    "request": {
+                        "method": "GET",
+                        "header": []
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Login",
+                    "request": {
+                        "method": "GET",
+                        "header": []
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Read One",
+                    "request": {
+                        "method": "GET",
+                        "header": []
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Read All",
+                    "request": {
+                        "method": "GET",
+                        "header": []
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Update",
+                    "request": {
+                        "method": "GET",
+                        "header": []
+                    },
+                    "response": []
+                }
+            ]
+        },
+        {
+            "name": "POST",
+            "item": [
+                {
+                    "name": "Create",
+                    "request": {
+                        "method": "GET",
+                        "header": []
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Update",
+                    "request": {
+                        "method": "GET",
+                        "header": []
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Read One",
+                    "request": {
+                        "method": "GET",
+                        "header": []
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Read All",
+                    "request": {
+                        "method": "GET",
+                        "header": []
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Delete",
+                    "request": {
+                        "method": "GET",
+                        "header": []
+                    },
+                    "response": []
+                }
+            ]
+        },
+        {
+            "name": "JADWAL",
+            "item": [
+                {
+                    "name": "Create",
+                    "request": {
+                        "method": "GET",
+                        "header": []
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Update",
+                    "request": {
+                        "method": "GET",
+                        "header": []
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Read One",
+                    "request": {
+                        "method": "GET",
+                        "header": []
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Read All",
+                    "request": {
+                        "method": "GET",
+                        "header": []
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Delete",
+                    "request": {
+                        "method": "GET",
+                        "header": []
+                    },
+                    "response": []
+                }
+            ]
+        }
+    ]
+}

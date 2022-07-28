@@ -4,6 +4,7 @@ import (
 	"crypto-project/helpers"
 	"crypto-project/interfaces"
 	"errors"
+	"fmt"
 	"github.com/dgrijalva/jwt-go"
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
@@ -74,6 +75,43 @@ func prepareResponse(user *interfaces.User, accounts []interfaces.ResponseAccoun
 	return response
 }
 
+func prepareUpdateUserResponse(user *interfaces.User, accounts []interfaces.ResponseAccount, withToken bool) map[string]interface{} {
+	responseUser := &interfaces.ResponseUser{
+		ID:       user.ID,
+		Username: user.Username,
+		Email:    user.Email,
+		UserType: user.UserType,
+		Accounts: accounts,
+	}
+
+	var response = map[string]interface{}{"message": "all is fine"}
+	if withToken {
+		var token = prepareToken(user)
+		response["jwt"] = token
+	}
+	response["data"] = responseUser
+
+	return response
+}
+
+func nprepareUpdateUserResponse(user *interfaces.User, withToken bool) map[string]interface{} {
+	responseUser := &interfaces.ResponseUser{
+		ID:       user.ID,
+		Username: user.Username,
+		Email:    user.Email,
+		UserType: user.UserType,
+	}
+
+	var response = map[string]interface{}{"message": "all is fine"}
+	if withToken {
+		var token = prepareToken(user)
+		response["jwt"] = token
+	}
+	response["data"] = responseUser
+
+	return response
+}
+
 func Register(username string, email string, pass string, user_type string) map[string]interface{} {
 
 	// Add validation to registration
@@ -128,6 +166,43 @@ func GetUser(id string, jwt string) map[string]interface{} {
 
 		var response = prepareResponse(user, accounts, false)
 		return response
+	} else {
+		return map[string]interface{}{"Message": "Not valid token"}
+	}
+}
+
+func UpdateUser(userID string, username string, email string, password string, user_type string, name string, status string, url string, jwt string) map[string]interface{} {
+
+	// userID 	= helpers.UserIDStr(jwt)
+	isValid := helpers.ValidateToken(userID, jwt)
+
+	if isValid {
+		db := helpers.ConnectDB()
+		user := &interfaces.User{}
+
+		err := db.First(&user, userID).Error
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return map[string]interface{}{"message": "record not found"}
+		}
+
+		checkuser := &interfaces.User{}
+		err1 := db.Where("username", username).Or("email", email).First(&checkuser).Error
+		fmt.Println(username)
+		if !errors.Is(err1, gorm.ErrRecordNotFound) {
+			return map[string]interface{}{"message": "User exist"}
+		}
+
+		users := &interfaces.User{Username: username, Password: password, Email: email, UserType: user_type, Status: status, Url: url}
+		db.Where("id = ?", userID).Updates(&users)
+
+		//account := &interfaces.Account{Name: name, Balance: balance}
+		//db.Where("user_id = ?", userID).Updates(&account)
+
+		//accounts := []interfaces.ResponseAccount{}
+		//respAccount := interfaces.ResponseAccount{ID: account.ID, Name: account.Name, Balance: int(account.Balance)}
+		//accounts = append(accounts, respAccount)
+
+		return nprepareUpdateUserResponse(user, false)
 	} else {
 		return map[string]interface{}{"Message": "Not valid token"}
 	}

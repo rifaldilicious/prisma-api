@@ -4,10 +4,13 @@ import "gorm.io/gorm"
 
 type User struct {
 	gorm.Model
-	Username string
-	Email    string
-	Password string
-	UserType string
+	Username  string
+	Email     string
+	Password  string
+	UserType  string
+	Status    string
+	Deskripsi string
+	Url       string
 }
 
 type Account struct {
@@ -43,46 +46,70 @@ type ErrResponse struct {
 
 type Post struct {
 	gorm.Model
-	ID  		uint
-	User_ID  	uint
-	Name    	string
-	Skill 		string
-	Location 	string
-	Position 	string
-	Work 		string
-	Salary 		uint
-	Message 	string
+	ID       uint
+	User_ID  uint
+	Name     string
+	Skill    string
+	Location string
+	Position string
+	Work     string
+	Salary   uint
+	Message  string
 }
 
 type ResponseCreatePost struct {
-	ID  		uint
+	ID uint
 }
 
 type ResponseReadPost struct {
-	ID  		uint
-	User_ID  	uint
-	Name    	string
-	Skill 		string
-	Location 	string
-	Position 	string
-	Work 		string
-	Salary 		uint
-	Message 	string
+	ID       uint
+	User_ID  uint
+	Name     string
+	Skill    string
+	Location string
+	Position string
+	Work     string
+	Salary   uint
+	Message  string
 }
 
 type ResponseDeletePost struct {
-	ID  		uint
+	ID uint
 }
 
 type ResponseUpdatePost struct {
 	gorm.Model
-	ID  		uint
-	User_ID  	uint
-	Name    	string
-	Skill 		string
-	Location 	string
-	Position 	string
-	Work 		string
-	Salary 		uint
-	Message 	string
+	ID       uint
+	User_ID  uint
+	Name     string
+	Skill    string
+	Location string
+	Position string
+	Work     string
+	Salary   uint
+	Message  string
+}
+
+type ResponseReadJadwal struct {
+	ID     uint
+	Kuota  uint
+	Lokasi string
+}
+
+type Jadwal struct {
+	gorm.Model
+	ID     uint
+	Kuota  uint
+	Lokasi string
+}
+
+type ResponseDeleteJadwal struct {
+	ID uint
+}
+
+type ResponseUpdateJadwal struct {
+	gorm.Model
+	ID     uint
+	Kuota  uint
+	Lokasi string
 }
