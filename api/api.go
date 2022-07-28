@@ -46,6 +46,8 @@ type User struct {
 	UserID   string
 	Balance  uint
 	Name     string
+	Status   string
+	Url      string
 }
 
 type Pengguna struct {
@@ -192,7 +194,7 @@ func updateUser(w http.ResponseWriter, r *http.Request) {
 
 	helpers.HandleErr(err)
 
-	updateUser := users.UpdateUser(userID, formattedBody.Username, formattedBody.Email, formattedBody.Password, formattedBody.UserType, formattedBody.Name, formattedBody.Balance, auth)
+	updateUser := users.UpdateUser(userID, formattedBody.Username, formattedBody.Email, formattedBody.Password, formattedBody.UserType, formattedBody.Name, formattedBody.Status, formattedBody.Url, auth)
 	apiResponse(updateUser, w)
 }
 

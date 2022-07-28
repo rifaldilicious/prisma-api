@@ -94,6 +94,24 @@ func prepareUpdateUserResponse(user *interfaces.User, accounts []interfaces.Resp
 	return response
 }
 
+func nprepareUpdateUserResponse(user *interfaces.User, withToken bool) map[string]interface{} {
+	responseUser := &interfaces.ResponseUser{
+		ID:       user.ID,
+		Username: user.Username,
+		Email:    user.Email,
+		UserType: user.UserType,
+	}
+
+	var response = map[string]interface{}{"message": "all is fine"}
+	if withToken {
+		var token = prepareToken(user)
+		response["jwt"] = token
+	}
+	response["data"] = responseUser
+
+	return response
+}
+
 func Register(username string, email string, pass string, user_type string) map[string]interface{} {
 
 	// Add validation to registration
@@ -153,7 +171,7 @@ func GetUser(id string, jwt string) map[string]interface{} {
 	}
 }
 
-func UpdateUser(userID string, username string, email string, password string, user_type string, name string, balance uint, jwt string) map[string]interface{} {
+func UpdateUser(userID string, username string, email string, password string, user_type string, name string, status string, url string, jwt string) map[string]interface{} {
 
 	// userID 	= helpers.UserIDStr(jwt)
 	isValid := helpers.ValidateToken(userID, jwt)
@@ -174,31 +192,17 @@ func UpdateUser(userID string, username string, email string, password string, u
 			return map[string]interface{}{"message": "User exist"}
 		}
 
-		//if(user.Username != username) {
-		//	err2 := db.Where("username", username).First(&user).Error
-		//	if errors.Is(err2, gorm.ErrRecordNotFound) {
-		//		return map[string]interface{}{"message": "user exist"}
-		//	}
-		//}
-		//
-		//if(user.Email != email) {
-		//	err2 := db.Where("email", email).First(&user).Error
-		//	if errors.Is(err2, gorm.ErrRecordNotFound) {
-		//		return map[string]interface{}{"message": "user exist"}
-		//	}
-		//}
-
-		users := &interfaces.User{Username: username, Password: password, Email: email, UserType: user_type}
+		users := &interfaces.User{Username: username, Password: password, Email: email, UserType: user_type, Status: status, Url: url}
 		db.Where("id = ?", userID).Updates(&users)
 
-		account := &interfaces.Account{Name: name, Balance: balance}
-		db.Where("user_id = ?", userID).Updates(&account)
+		//account := &interfaces.Account{Name: name, Balance: balance}
+		//db.Where("user_id = ?", userID).Updates(&account)
 
-		accounts := []interfaces.ResponseAccount{}
-		respAccount := interfaces.ResponseAccount{ID: account.ID, Name: account.Name, Balance: int(account.Balance)}
-		accounts = append(accounts, respAccount)
+		//accounts := []interfaces.ResponseAccount{}
+		//respAccount := interfaces.ResponseAccount{ID: account.ID, Name: account.Name, Balance: int(account.Balance)}
+		//accounts = append(accounts, respAccount)
 
-		return prepareUpdateUserResponse(user, accounts, false)
+		return nprepareUpdateUserResponse(user, false)
 	} else {
 		return map[string]interface{}{"Message": "Not valid token"}
 	}
