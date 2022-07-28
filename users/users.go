@@ -4,6 +4,7 @@ import (
 	"crypto-project/helpers"
 	"crypto-project/interfaces"
 	"errors"
+	"fmt"
 	"github.com/dgrijalva/jwt-go"
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
@@ -164,6 +165,13 @@ func UpdateUser(userID string, username string, email string, password string, u
 		err := db.First(&user, userID).Error
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return map[string]interface{}{"message": "record not found"}
+		}
+
+		checkuser := &interfaces.User{}
+		err1 := db.Where("username", username).Or("email", email).First(&checkuser).Error
+		fmt.Println(username)
+		if !errors.Is(err1, gorm.ErrRecordNotFound) {
+			return map[string]interface{}{"message": "User exist"}
 		}
 
 		//if(user.Username != username) {
