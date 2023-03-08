@@ -5,10 +5,11 @@ import (
 	"crypto-project/interfaces"
 	"errors"
 	"fmt"
+	"time"
+
 	"github.com/dgrijalva/jwt-go"
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
-	"time"
 )
 
 func Login(username string, pass string) map[string]interface{} {
@@ -72,6 +73,8 @@ func prepareResponse(user *interfaces.User, accounts []interfaces.ResponseAccoun
 	}
 	response["data"] = responseUser
 
+	fmt.Println(response)
+
 	return response
 }
 
@@ -122,22 +125,28 @@ func Register(username string, email string, pass string, user_type string) map[
 			{Value: pass, Valid: "password"},
 			{Value: user_type, Valid: "user_type"},
 		})
+	fmt.Println("menuju valid ==>", valid)
 	if valid {
+		fmt.Println("sampe valid")
 		db := helpers.ConnectDB()
 		checkuser := &interfaces.User{}
 
 		//prevent duplicate username, email
 		err := db.Where("username", username).Or("email", email).First(&checkuser).Error
 		if !errors.Is(err, gorm.ErrRecordNotFound) {
+			fmt.Println("eorr")
 			return map[string]interface{}{"message": "User exist"}
 		}
+		fmt.Println("mau encrypt")
 
 		generatedPassword := helpers.HashAndSalt([]byte(pass))
 		user := &interfaces.User{Username: username, Email: email, Password: generatedPassword, UserType: user_type}
-		db.Create(&user)
+		db.Select("Username", "Email", "Password", "UserType").Create(&user)
+		fmt.Println("asd")
 
 		account := &interfaces.Account{Type: "Daily Account", Name: string(username + "'s" + " account"), Balance: 0, UserID: user.ID}
 		db.Create(&account)
+		fmt.Println("adsd")
 
 		accounts := []interfaces.ResponseAccount{}
 		respAccount := interfaces.ResponseAccount{ID: account.ID, Name: account.Name, Balance: int(account.Balance)}
@@ -146,6 +155,7 @@ func Register(username string, email string, pass string, user_type string) map[
 
 		return response
 	} else {
+		fmt.Println("gagal")
 		return map[string]interface{}{"message": "not valid values"}
 	}
 }

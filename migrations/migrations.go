@@ -2,6 +2,7 @@ package migrations
 
 import (
 	"crypto-project/helpers"
+
 	"gorm.io/gorm"
 )
 
@@ -10,6 +11,7 @@ type User struct {
 	Username string
 	Email    string
 	Password string
+	UserType string
 }
 
 type Account struct {
@@ -40,7 +42,9 @@ func createAccounts() {
 
 func Migrate() {
 	db := helpers.ConnectDB()
-	db.AutoMigrate(&User{}, &Account{})
+	if er := db.AutoMigrate(&User{}, &Account{}); er != nil {
+		println('2')
+	}
 
-	createAccounts()
+	// createAccounts()
 }
