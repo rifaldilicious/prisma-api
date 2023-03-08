@@ -3,16 +3,18 @@ package helpers
 import (
 	"crypto-project/interfaces"
 	"encoding/json"
-	"github.com/dgrijalva/jwt-go"
-	"golang.org/x/crypto/bcrypt"
-	"gorm.io/driver/postgres"
-	"gorm.io/gorm"
 	"log"
 	"net/http"
 	"regexp"
+
+	"github.com/dgrijalva/jwt-go"
+	"golang.org/x/crypto/bcrypt"
+	"gorm.io/driver/mysql"
+	"gorm.io/gorm"
+
 	// "strconv"
-	"strings"
 	"fmt"
+	"strings"
 )
 
 func HandleErr(err error) {
@@ -29,9 +31,10 @@ func HashAndSalt(pass []byte) string {
 }
 
 func ConnectDB() *gorm.DB {
-	dsn := "host=labourpool-db-dev.mareca.vc user=postgres password=labpool dbname=labourpool port=5432 sslmode=disable TimeZone=Asia/Shanghai"
+	// dsn := "host=labourpool-db-dev.mareca.vc user=postgres password=labpool dbname=labourpool port=5432 sslmode=disable TimeZone=Asia/Shanghai"
 	//dsn := "host=localhost user=dikdik password=kurnia dbname=restapi port=5432 sslmode=disable TimeZone=Asia/Shanghai"
-	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
+	dsn := "superapp:Super@ppd82023!@tcp(103.249.227.108)/dbname?charset=utf8mb4&parseTime=True&loc=Local"
+	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
 	HandleErr(err)
 	return db
 }
@@ -40,23 +43,27 @@ func Validation(values []interfaces.Validation) bool {
 	username := regexp.MustCompile(`^([A-Za-z0-9]{5,})+$`)
 	email := regexp.MustCompile(`^[A-Za-z0-9]+[@]+[A-Za-z0-9]+[.]+[A-Za-z]+$`)
 
+	fmt.Println(values)
 	for i := 0; i < len(values); i++ {
 		switch values[i].Valid {
 		case "username":
 			if !username.MatchString(values[i].Value) {
+				fmt.Println("gagal user", username.MatchString(values[i].Value))
 				return false
 			}
 		case "email":
 			if !email.MatchString(values[i].Value) {
+				fmt.Println("gagal email")
 				return false
 			}
 		case "password":
 			if len(values[i].Value) < 5 {
+				fmt.Println("gagal password")
 				return false
 			}
 		case "user_type":
-			s := []string{"peserta","perusahaan","admin"}			
-			if !contains(s, values[i].Value) {
+			s := []string{"peserta", "perusahaan", "admin"}
+			if contains(s, values[i].Value) {
 				return false
 			}
 		}
@@ -119,7 +126,7 @@ func UserIDStr(jwtToken string) string {
 	})
 	HandleErr(err)
 	userID := tokenData["user_id"]
-	id := fmt.Sprintf("%v",userID)
+	id := fmt.Sprintf("%v", userID)
 	if token.Valid {
 		return id
 	} else {
@@ -129,12 +136,12 @@ func UserIDStr(jwtToken string) string {
 }
 
 func contains(slice []string, item string) bool {
-    set := make(map[string]struct{}, len(slice))
-    for _, s := range slice {
-        set[s] = struct{}{}
-    }
-    _, ok := set[item] 
-    return ok
+	set := make(map[string]struct{}, len(slice))
+	for _, s := range slice {
+		set[s] = struct{}{}
+	}
+	_, ok := set[item]
+	return ok
 }
 
 func RespondWithJSON(w http.ResponseWriter, code int, payload interface{}) {
