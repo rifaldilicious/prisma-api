@@ -9,7 +9,7 @@ import (
 
 	"github.com/dgrijalva/jwt-go"
 	"golang.org/x/crypto/bcrypt"
-	"gorm.io/driver/mysql"
+	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 
 	// "strconv"
@@ -33,8 +33,8 @@ func HashAndSalt(pass []byte) string {
 func ConnectDB() *gorm.DB {
 	// dsn := "host=labourpool-db-dev.mareca.vc user=postgres password=labpool dbname=labourpool port=5432 sslmode=disable TimeZone=Asia/Shanghai"
 	//dsn := "host=localhost user=dikdik password=kurnia dbname=restapi port=5432 sslmode=disable TimeZone=Asia/Shanghai"
-	dsn := "superapp:Super@ppd82023!@tcp(103.249.227.108)/dbname?charset=utf8mb4&parseTime=True&loc=Local"
-	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
+	dsn := "host=localhost user=postgres password=rifaldilicious5 dbname=labourpool port=5432 sslmode=disable TimeZone=Asia/Shanghai"
+	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	HandleErr(err)
 	return db
 }
