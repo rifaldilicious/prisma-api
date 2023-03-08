@@ -32,10 +32,10 @@ type Login struct {
 }
 
 type Register struct {
-	Username  string
-	Email     string
-	Password  string
-	User_type string
+	Username  string `json:"username"`
+	Email     string `json:"email"`
+	Password  string `json:"password"`
+	User_type string `json:"user_type"`
 }
 
 type User struct {
@@ -362,6 +362,7 @@ func updateJadwal(w http.ResponseWriter, r *http.Request) {
 func StartApi() {
 	router := mux.NewRouter()
 	router.Use(helpers.PanicHandler)
+	// migrations.Migrate()
 
 	//USER
 	router.HandleFunc("/login", login).Methods("POST")

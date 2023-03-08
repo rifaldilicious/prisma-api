@@ -47,7 +47,7 @@ func Validation(values []interfaces.Validation) bool {
 	for i := 0; i < len(values); i++ {
 		switch values[i].Valid {
 		case "username":
-			if !username.MatchString(values[i].Value) {
+			if username.MatchString(values[i].Value) {
 				fmt.Println("gagal user", username.MatchString(values[i].Value))
 				return false
 			}
